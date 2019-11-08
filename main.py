@@ -1,4 +1,4 @@
-import init
+import my_math as m
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -13,102 +13,54 @@ def get_x():
     return x
 
 
-def get_value():
-    value = []
-    var = float(input("Input a1: "))
-
-    if var >= 1 and var <= 10:
-        value.append(var)
-    else :
-        raise Exception
-
-    var = float(input("Input a2: "))
-
-    if var >= 1 and var <= 10:
-        value.append(var)
-    else:
-        raise Exception
-
-    var = float(input("Input t0: "))
-    value.append(var)
-    var = float(input("Input q: "))
-    value.append(var)
-    return value
-
-
-def var_1(t, f, g, x):
-    x_n = []
-    l = float(input("Enter l2: "))
-    l = init.init_l(l2=l)
-
-    for i in range(len(t)):
-        x = init.calculate_x(f, g, x, l)
-        x_n.append(x)
-
-    return x_n
-
-
-def var_2(t, f, g, x):
-    x_n = []
-    l = float(input("Enter l3: "))
-    l = init.init_l(l3=l)
-    k0 = float(input("Input k0: "))
-    k = 0
-
-    for i in range(len(t)):
-        x = init.calculate_x(f, g, x, l)
-        x_n.append(x)
-
-    return x_n
-
-
 def choice_variant():
     variant = float(input("Input variant: "))
 
     if variant == 1:
-        func = var_1
+        var = 1
     elif variant == 2:
-        func = var_2
+        var = 2
     else:
         raise ValueError
 
-    return func
+    l = float(input("Enter l" + str(var+1) + ": "))
+
+    return l, var
 
 
 def draw(t, y):
     plt.xlabel('t')
     plt.ylabel('y(t)')
     plt.grid()
-
-    for i in range(len(y)):
-        plt.plot(range(len(t)), y[i])
-        text = "x" + str(i)
-        plt.legend(('x1', 'x2', 'x3'))
-
+    plt.plot(range(len(t)), y[0])
+    plt.plot(range(len(t)), y[1])
+    plt.legend(("x1", "x2"))
     plt.show()
 
 
 def main():
+
+    x = get_x()
+
     try:
-        value = get_value()
+        a = m.init_a()
     except Exception:
         print("a1 and a2 must be a1 >= 1 && a2 >= 1 && a1 =< 10 && a2 =<10")
         return 0
 
-    x = get_x()
-    t = np.arange(0, 10 + value[2], value[2])
-    a = init.init_a(value[0], value[1])
-    f = init.calculate_f(a, value[2], value[3])
-    g = init.calculate_g(f, a)
-
-    try:
-     func = choice_variant()
-    except ValueError:
-        print("Error")
-        return 0
-
-    x = func(t, f, g, x)
-    y = init.init_y(x, t)
+    t0 = float(input("Input t0: "))
+    t = np.arange(0, 50 + t0, t0)
+    q = float(input("Input q: "))
+    f = m.calculate_f(a, t0, q)
+    g = m.calculate_g(f, a)
+    l, var = choice_variant()
+    l = m.init_l(var, l)
+    l = m.find_l(l, var, f, g, x, t)
+    x0 = m.calculation_array_of_x(f, g, l, t, x, var)
+    x1 = m.calculation_array_of_x_in_system(f, g, x, t)
+    y = []
+    y.append(m.init_y(x0, t))
+    y.append(m.init_y(x1, t))
     draw(t, y)
 
 
